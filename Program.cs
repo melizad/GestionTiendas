@@ -314,7 +314,7 @@ namespace GestionTiendas
                         Console.WriteLine(
                             "\nEditar artículo" +
                             "\n---------------");
-                        Console.WriteLine("Ingrese el nombre del artículo a editar:");
+                        Console.Write("Ingrese el nombre del artículo a editar:");
                         string nombreArticulo = Console.ReadLine();
 
                         Articulo articuloAEditar = listaArticulos.Find(a => a.Nombre == nombreArticulo);
@@ -344,9 +344,25 @@ namespace GestionTiendas
                                 
                             }
 
-                            Console.Write("\nIngrese nuevo valor (Enter para mantener el actual): ");
+                            Console.Write("Ingrese nuevo valor (Enter para mantener el actual): ");
                             string nuevoValor = Console.ReadLine();
-                            if (!string.IsNullOrEmpty(nuevoValor)) articuloAEditar.Valor = double.Parse(nuevoValor);
+                            if (!string.IsNullOrEmpty(nuevoValor))
+                            {
+                                double valorNumerico;
+                                while (!double.TryParse(nuevoValor, out valorNumerico))
+                                {
+                                    Console.WriteLine("Error, el valor debe ser un número válido.");
+                                    Console.Write("Ingrese nuevo valor (Enter para mantener el actual): ");
+                                    nuevoValor = Console.ReadLine();
+
+                                    if (string.IsNullOrEmpty(nuevoValor)) break;
+                                }
+
+                                if (double.TryParse(nuevoValor, out valorNumerico))
+                                {
+                                    articuloAEditar.Valor = valorNumerico;
+                                }
+                            }
 
                             Console.Write("\nInformación actualizada correctamente.");
                         }
@@ -386,7 +402,26 @@ namespace GestionTiendas
             articulo.Nombre = nombre;
 
             Console.Write("Valor unitario: ");
-            articulo.Valor = double.Parse(Console.ReadLine());
+            string valor = Console.ReadLine();
+
+            if (!string.IsNullOrEmpty(valor))
+            {
+                double valorNumerico;
+                while (!double.TryParse(valor, out valorNumerico))
+                {
+                    Console.WriteLine("Error, ingrese un número válido.");
+                    Console.Write("Valor unitario: ");
+                    valor = Console.ReadLine();
+
+                    if (string.IsNullOrEmpty(valor)) break;
+                }
+
+                if (double.TryParse(valor, out valorNumerico))
+                {
+                    articulo.Valor = valorNumerico;
+                }
+            }
+
 
             articulo.Cantidad = 0;
 
@@ -417,7 +452,7 @@ namespace GestionTiendas
 
             if (articuloAEditar != null)
             {
-                Console.WriteLine("Artículo encontrado:");
+                Console.WriteLine("Artículo encontrado");
                 Console.WriteLine($"Nombre: {articuloAEditar.Nombre}");
                 Console.WriteLine($"Cantidad de unidades disponibles: {articuloAEditar.Cantidad}");
                 Console.WriteLine("---------------------------------------");
@@ -483,12 +518,12 @@ namespace GestionTiendas
                                 }
                                 else
                                 {
-                                    Console.WriteLine("Error, No hay suficientes unidades del artículo.");
+                                    Console.WriteLine("Error, no hay suficientes unidades del artículo.");
                                 }
                             }
                             else
                             {
-                                Console.WriteLine("Error, Ingrese un número válido.");
+                                Console.WriteLine("Error, ingrese un número válido.");
                             }
                         }
                         else
