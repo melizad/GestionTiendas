@@ -47,7 +47,7 @@ namespace GestionTiendas
                         "\n------------------" +
                         "\n-Inicio de sesion-" +
                         "\n------------------");
-                    Console.Write("Usuario (Cedula): ");
+                    Console.Write("Usuario (Cédula): ");
                     string usuario = Console.ReadLine();
                     Console.Write("Contraseña: ");
                     string contraseña = Console.ReadLine();
@@ -460,7 +460,23 @@ namespace GestionTiendas
                 
                 Console.Write("\nIngrese la cantidad de unidades disponibles (Enter para mantener el actual): ");
                 string nuevaCantidad = Console.ReadLine();
-                if (!string.IsNullOrEmpty(nuevaCantidad)) articuloAEditar.Cantidad = int.Parse(nuevaCantidad);
+                //if (!string.IsNullOrEmpty(nuevaCantidad)) articuloAEditar.Cantidad = int.Parse(nuevaCantidad);
+                if (!string.IsNullOrEmpty(nuevaCantidad))
+                {
+                    int cantidadNumerica;
+                    while (!int.TryParse(nuevaCantidad, out cantidadNumerica))
+                    {
+                        Console.WriteLine("Error, ingrese un número válido.");
+                        Console.Write("Ingrese la cantidad de unidades disponibles (Enter para mantener el actual): ");
+                        nuevaCantidad = Console.ReadLine();
+                        if (string.IsNullOrEmpty(nuevaCantidad)) break;
+                    }
+
+                    if (int.TryParse(nuevaCantidad, out cantidadNumerica))
+                    {
+                        articuloAEditar.Cantidad = cantidadNumerica;
+                    }
+                }
 
                 Console.WriteLine("Información actualizada correctamente.");
             }
