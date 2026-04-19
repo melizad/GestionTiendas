@@ -1,0 +1,22 @@
+# --- Carpetas de Compilación ---
+bin/
+obj/
+
+# --- Archivos de Visual Studio ---
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+
+# --- Archivos de VS Code ---
+.vscode/
+
+# --- Paquetes NuGet ---
+*.nupkg
+**/packages/*
+!**/packages/build/
+
+# --- Otros archivos temporales ---
+*.log
+*.tmp
+.DS_Store
