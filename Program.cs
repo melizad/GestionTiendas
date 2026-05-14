@@ -4,91 +4,68 @@ namespace GestionTiendas
 {
     class Program
     {
-        // ── Usuarios ──────────────────────────────────────────────
-        const int MAX_USUARIOS = 6;
-        static string[] usuarioNombres = new string[MAX_USUARIOS];
-        static string[] usuarioCedulas = new string[MAX_USUARIOS];
-        static string[] usuarioContraseñas = new string[MAX_USUARIOS];
-        static int[] usuarioArticulos = new int[MAX_USUARIOS];   // artículos creados por usuario
-        static int totalUsuarios = 0;
+        static string[] credencialesPorDefecto = { "00000", "12345" };
 
-        // ── Artículos ─────────────────────────────────────────────
-        const int MAX_ARTICULOS = 5;
-        static string[] articuloNombres = new string[MAX_ARTICULOS];
-        static double[] articuloValores = new double[MAX_ARTICULOS];
-        static int[] articuloCantidades = new int[MAX_ARTICULOS];
-        static int totalArticulos = 0;
+        static string[,] matrizUsuarios = new string[2, 5];
+        static string[,] matrizNuevosUsuarios = new string[2, 5];
+        static int totalNuevosUsuarios = 0;
 
-        // ── Sesión activa ─────────────────────────────────────────
-        static int usuarioLogueadoIdx = -1;
+        static string[,] matrizArticulos = new string[2, 5];
+        static string[,] matrizNuevosArticulos = new string[2, 5];
+        static int totalNuevosArticulos = 0;
 
-        // ═════════════════════════════════════════════════════════
+        static string[,] matrizRegistroVenta = new string[2, 5];
+
         static void Main(string[] args)
         {
-            // Usuario administrador por defecto (índice 0)
-            usuarioNombres[0] = "Administrador";
-            usuarioCedulas[0] = "00000";
-            usuarioContraseñas[0] = "12345";
-            usuarioArticulos[0] = 0;
-            totalUsuarios = 1;
-
-            Console.WriteLine(
-                "\n===============================" +
-                "\n=SISTEMA DE GESTIÓN DE TIENDAS=" +
-                "\n===============================");
-
+            CargarUsuariosBase();
+            CargarArticulosBase();
+            Console.WriteLine("\n===============================");
+            Console.WriteLine("=SISTEMA DE GESTIÓN DE TIENDAS=");
+            Console.WriteLine("===============================");
             Autenticacion();
         }
 
-        // ─────────────────────────────────────────────────────────
-        // 1. AUTENTICACIÓN
-        // ─────────────────────────────────────────────────────────
+        static void CargarUsuariosBase()
+        {
+            matrizUsuarios[0, 0] = "15386596"; matrizUsuarios[1, 0] = "Ana";
+            matrizUsuarios[0, 1] = "39192774"; matrizUsuarios[1, 1] = "Brett";
+            matrizUsuarios[0, 2] = "1039311755"; matrizUsuarios[1, 2] = "Carolina";
+            matrizUsuarios[0, 3] = "3809765"; matrizUsuarios[1, 3] = "Diego";
+            matrizUsuarios[0, 4] = "21386890"; matrizUsuarios[1, 4] = "Estefannia";
+        }
+
+        static void CargarArticulosBase()
+        {
+            matrizArticulos[0, 0] = "Huevos"; matrizArticulos[1, 0] = "500";
+            matrizArticulos[0, 1] = "Leche"; matrizArticulos[1, 1] = "2500";
+            matrizArticulos[0, 2] = "Harina"; matrizArticulos[1, 2] = "3000";
+            matrizArticulos[0, 3] = "Panela"; matrizArticulos[1, 3] = "5000";
+            matrizArticulos[0, 4] = "Pan"; matrizArticulos[1, 4] = "4000";
+        }
+
         static void Autenticacion()
         {
-            bool programaActivo = true;
-            while (programaActivo)
+            while (true)
             {
-                bool autenticado = false;
-                usuarioLogueadoIdx = -1;
+                Console.WriteLine("\n------------------\n-Inicio de sesión-\n------------------");
+                Console.Write("Usuario: ");
+                string u = Console.ReadLine();
+                Console.Write("Contraseña: ");
+                string c = Console.ReadLine();
 
-                while (!autenticado)
+                if (u == credencialesPorDefecto[0] && c == credencialesPorDefecto[1])
                 {
-                    Console.WriteLine(
-                        "\n------------------" +
-                        "\n-Inicio de sesion-" +
-                        "\n------------------");
-                    Console.Write("Usuario (Cédula): ");
-                    string cedula = Console.ReadLine();
-                    Console.Write("Contraseña: ");
-                    string clave = Console.ReadLine();
-
-                    for (int i = 0; i < totalUsuarios; i++)
-                    {
-                        if (usuarioCedulas[i] == cedula && usuarioContraseñas[i] == clave)
-                        {
-                            usuarioLogueadoIdx = i;
-                            break;
-                        }
-                    }
-
-                    if (usuarioLogueadoIdx != -1)
-                    {
-                        autenticado = true;
-                        Console.WriteLine($"\nBienvenido, {usuarioNombres[usuarioLogueadoIdx]}");
-                    }
-                    else
-                    {
-                        Console.WriteLine("\nUsuario y/o contraseña incorrectos.");
-                    }
+                    Console.WriteLine("\n¡Bienvenido!");
+                    MenuPrincipal();
                 }
-
-                MenuPrincipal();
+                else
+                {
+                    Console.WriteLine("\nError de autenticación. Intente de nuevo.");
+                }
             }
         }
 
-        // ─────────────────────────────────────────────────────────
-        // 2. MENÚ PRINCIPAL
-        // ─────────────────────────────────────────────────────────
         static void MenuPrincipal()
         {
             bool sesionActiva = true;
@@ -98,527 +75,429 @@ namespace GestionTiendas
                     "\n----------------" +
                     "\n-Menú Principal-" +
                     "\n----------------");
-                Console.WriteLine("1. Gestión de usuarios");
-                Console.WriteLine("2. Gestión de artículos");
-                Console.WriteLine("3. Gestión de ventas");
-                Console.WriteLine("4. Cerrar sesión");
-                Console.Write("Seleccione una opción: ");
+                Console.WriteLine("1. Gestión de usuarios" +
+                    "\n2. Gestión de artículos" +
+                    "\n3. Gestión de ventas" +
+                    "\n4. Salir del programa");
+                Console.Write("Seleccione: ");
                 string op = Console.ReadLine();
 
-                if (op == "1") GestionarUsuarios();
-                else if (op == "2") GestionarArticulos();
-                else if (op == "3") GestionarVentas();
+                if (op == "1")
+                {
+                    Console.WriteLine("\nBienvenido al módulo Gestión de usuarios.");
+                    GestionarUsuarios();
+                }
+
+                else if (op == "2")
+                {
+                    Console.WriteLine("\nBienvenido al módulo Gestión de artículos.");
+                    GestionarArticulos();
+                }
+                else if (op == "3") 
+                {
+                    Console.WriteLine("\nBienvenido al módulo Gestión de ventas.");
+                    GestionarVentas();
+                } 
                 else if (op == "4")
                 {
-                    sesionActiva = false;
                     Console.WriteLine("\nCerrando sesión...");
+                    sesionActiva = false;
                 }
                 else Console.WriteLine("Ingrese una opción del menú válida.");
             }
         }
 
-        // ─────────────────────────────────────────────────────────
-        // 3. GESTIÓN DE USUARIOS
-        // ─────────────────────────────────────────────────────────
+        // --- MÉTODOS DE GESTIÓN DE USUARIOS ---
         static void GestionarUsuarios()
         {
-            bool menuUsuario = true;
-            while (menuUsuario)
+            bool salirGestion = false;
+            while (!salirGestion)
             {
                 Console.WriteLine(
                     "\n---------------------" +
                     "\n-Gestión de usuarios-" +
                     "\n---------------------");
-                Console.WriteLine("1. Ver lista de usuarios");
-                Console.WriteLine("2. Nuevo usuario");
-                Console.WriteLine("3. Editar información de usuario");
-                Console.WriteLine("4. Salir de Gestión de usuarios");
-                Console.Write("Seleccione una opción: ");
+                Console.WriteLine(
+                    "1. Ver lista de usuarios" +
+                    "\n2. Nuevo usuario" +
+                    "\n3. Editar inforamción de usuario" +
+                    "\n4. Salir de Gestión de usuarios ");
+                Console.Write("Seleccione: ");
                 string op = Console.ReadLine();
+                if (op == "1") VerListaUsuarios();
+                else if (op == "2") CrearNuevaMatrizUsuario();
+                else if (op == "3") BuscarUsuario();
+                else if (op == "4") salirGestion = true;
+                else Console.WriteLine("\nIngrese una opción del menú válida");
 
-                if (op == "1")
-                {
-                    Console.WriteLine("\nLista de usuarios\n-----------------");
-                    MostrarMenuUsuarios();
-                }
-                else if (op == "2")
-                {
-                    Console.WriteLine("\nCrear Usuario\n-------------");
-                    CrearUsuario();
-                }
-                else if (op == "3")
-                {
-                    Console.WriteLine("\nEditar Usuario\n--------------");
-                    MostrarMenuEdicionUsuarios();
-                }
-                else if (op == "4") menuUsuario = false;
-                else Console.WriteLine("Ingrese una opción del menú válida.");
             }
         }
 
-        static void CrearUsuario()
+        static void VerListaUsuarios()
         {
-            if (totalUsuarios >= MAX_USUARIOS)
+            Console.WriteLine("\nLista de usuarios:");
+            for (int i = 0; i < 5; i++)
+                Console.WriteLine($"{i + 1}. {(string.IsNullOrEmpty(matrizUsuarios[0, i]) ? "Vacío" : matrizUsuarios[0, i])}");
+
+            bool seleccionValida = false;
+            while (!seleccionValida)
             {
-                Console.WriteLine("Error: capacidad máxima de usuarios alcanzada.");
-                return;
-            }
-
-            Console.Write("Nombre completo: ");
-            string nombre = Console.ReadLine();
-
-            string cedula = "";
-            bool cedulaDisponible = false;
-            while (!cedulaDisponible)
-            {
-                Console.Write("Cédula: ");
-                cedula = Console.ReadLine();
-                if (CedulaValida(cedula)) cedulaDisponible = true;
-            }
-
-            Console.Write("Contraseña: ");
-            string clave = Console.ReadLine();
-
-            usuarioNombres[totalUsuarios] = nombre;
-            usuarioCedulas[totalUsuarios] = cedula;
-            usuarioContraseñas[totalUsuarios] = clave;
-            usuarioArticulos[totalUsuarios] = 0;
-            totalUsuarios++;
-
-            Console.WriteLine("Usuario creado exitosamente.");
-        }
-
-        static bool CedulaValida(string cedula)
-        {
-            for (int i = 0; i < totalUsuarios; i++)
-            {
-                if (usuarioCedulas[i] == cedula)
-                {
-                    Console.WriteLine("Error, esta cédula ya pertenece a un usuario registrado.");
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        // Muestra usuarios (sin el admin índice 0) y permite ver detalle
-        static void MostrarMenuUsuarios()
-        {
-            if (!MostrarListaUsuarios()) return;
-
-            int seleccion = 0;
-            bool esValido = false;
-            while (!esValido)
-            {
-                Console.Write("\nSeleccione el número del usuario que desea ver: ");
+                Console.Write("\nSeleccione un número para ver detalle (1-5): ");
                 string entrada = Console.ReadLine();
-                if (int.TryParse(entrada, out seleccion) && seleccion >= 1 && seleccion < totalUsuarios)
-                    esValido = true;
-                else
-                    Console.WriteLine("Ingrese una opción del menú válida.");
-            }
 
-            Console.WriteLine("--------------------------");
-            Console.WriteLine("Usuario encontrado");
-            Console.WriteLine($"Nombre: {usuarioNombres[seleccion]}");
-            Console.WriteLine($"Cédula: {usuarioCedulas[seleccion]}");
-            Console.WriteLine("--------------------------");
-        }
-
-        static void MostrarMenuEdicionUsuarios()
-        {
-            if (!MostrarListaUsuarios()) return;
-
-            int seleccion = 0;
-            bool esValido = false;
-            while (!esValido)
-            {
-                Console.Write("Ingrese el número del usuario a editar: ");
-                string entrada = Console.ReadLine();
-                if (int.TryParse(entrada, out seleccion) && seleccion >= 1 && seleccion < totalUsuarios)
-                    esValido = true;
-                else
-                    Console.WriteLine("Ingrese una opción del menú válida.");
-            }
-
-            Console.WriteLine("-------------------------------");
-            Console.WriteLine("Usuario encontrado");
-            Console.WriteLine($"Nombre actual: {usuarioNombres[seleccion]}");
-            Console.WriteLine($"Cédula actual: {usuarioCedulas[seleccion]}");
-            Console.WriteLine("-------------------------------");
-
-            Console.Write("Ingrese nuevo nombre (Enter para mantener el actual): ");
-            string nuevoNombre = Console.ReadLine();
-            if (!string.IsNullOrEmpty(nuevoNombre)) usuarioNombres[seleccion] = nuevoNombre;
-
-            bool cedulaValida = false;
-            while (!cedulaValida)
-            {
-                Console.Write("Ingrese nueva cédula (Enter para mantener actual): ");
-                string nuevaCedula = Console.ReadLine();
-                if (string.IsNullOrEmpty(nuevaCedula) || nuevaCedula == usuarioCedulas[seleccion])
-                    cedulaValida = true;
-                else if (CedulaValida(nuevaCedula))
+                if (int.TryParse(entrada, out int sel) && sel >= 1 && sel <= 5)
                 {
-                    usuarioCedulas[seleccion] = nuevaCedula;
-                    cedulaValida = true;
+                    int i = sel - 1; 
+
+                    Console.WriteLine("-------------------");
+                    Console.WriteLine($"Cédula: {matrizUsuarios[0, i]}");
+                    Console.WriteLine($"Nombre: {matrizUsuarios[1, i]}");
+                    Console.WriteLine("-------------------");
+                    
+                    seleccionValida = true; 
+                }
+                else
+                {
+                    Console.WriteLine("Ingrese una opción del menú válida");
                 }
             }
-
-            Console.Write("Ingrese nueva contraseña (Enter para mantener actual): ");
-            string nuevaPass = Console.ReadLine();
-            if (!string.IsNullOrEmpty(nuevaPass)) usuarioContraseñas[seleccion] = nuevaPass;
-
-            Console.WriteLine("\nInformación actualizada correctamente.");
         }
 
-        // Muestra usuarios desde índice 1 (0 = admin). Devuelve false si no hay usuarios.
-        static bool MostrarListaUsuarios()
+        static void CrearNuevaMatrizUsuario()
         {
-            if (totalUsuarios <= 1)
+            bool continuar = true;
+
+            while (continuar)
             {
-                Console.WriteLine("\nNo hay usuarios registrados.");
-                return false;
+                Console.WriteLine("\nCrear Nuevos Usuarios:");
+                Console.WriteLine("1. Crear nuevo usuario");
+                Console.WriteLine("2. Salir");
+                Console.Write("Seleccione una opción: ");
+                string opcion = Console.ReadLine();
+
+                if (opcion == "1")
+                {
+                    if (totalNuevosUsuarios < 5)
+                    {
+                        Console.WriteLine($"\nRegistrando usuario #{totalNuevosUsuarios + 1}");
+
+                        Console.Write("Ingrese número de cédula: ");
+                        matrizNuevosUsuarios[0, totalNuevosUsuarios] = Console.ReadLine();
+
+                        Console.Write("Ingrese nombre completo: ");
+                        matrizNuevosUsuarios[1, totalNuevosUsuarios] = Console.ReadLine();
+
+                        totalNuevosUsuarios++;
+                        Console.WriteLine("¡Usuario almacenado con éxito en la nueva matriz!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nLa matriz está llena. Ya se han creado los 5 usuarios permitidos.");
+                    }
+                }
+                else if (opcion == "2")
+                {
+                    continuar = false;
+                }
+                else
+                {
+                    Console.WriteLine("Opción no válida. Intente de nuevo.");
+                }
             }
-            for (int i = 1; i < totalUsuarios; i++)
-                Console.WriteLine($"{i}. {usuarioCedulas[i]} - {usuarioNombres[i]}");
-            return true;
         }
 
-        // ─────────────────────────────────────────────────────────
-        // 4. GESTIÓN DE ARTÍCULOS
-        // ─────────────────────────────────────────────────────────
+        static void BuscarUsuario()
+        {
+            Console.Write("\nCédula a buscar: ");
+            string buscar = Console.ReadLine();
+            bool encontrado = false;
+            for (int i = 0; i < 5; i++)
+            {
+                if (matrizUsuarios[0, i] == buscar && !string.IsNullOrEmpty(buscar))
+                {
+                    Console.WriteLine($"Usuario encontrado");
+                    Console.WriteLine("-------------------");
+                    Console.WriteLine($"Cédula: {matrizUsuarios[0, i]}");
+                    Console.WriteLine($"Nombre: {matrizUsuarios[1, i]}");
+                    Console.WriteLine("-------------------");
+                    encontrado = true; break;
+                }
+            }
+            if (!encontrado) Console.WriteLine("Usuario no encontrado.");
+        }
+
+        // --- MÉTODOS DE GESTIÓN DE ARTÍCULOS ---
         static void GestionarArticulos()
         {
-            bool menuArticulo = true;
-            while (menuArticulo)
+            bool salir = false;
+            while (!salir)
             {
                 Console.WriteLine(
                     "\n----------------------" +
                     "\n-Gestión de Artículos-" +
                     "\n----------------------");
-                Console.WriteLine("1. Ver lista de artículos");
-                Console.WriteLine("2. Nuevo artículo");
-                Console.WriteLine("3. Editar información del artículo");
-                Console.WriteLine("4. Salir de Gestión de Artículos");
-                Console.Write("Seleccione una opción: ");
-                string op = Console.ReadLine();
-
-                if (op == "1")
-                {
-                    Console.WriteLine("\nLista de artículos\n------------------");
-                    MostrarMenuArticulos();
-                }
-                else if (op == "2")
-                {
-                    Console.WriteLine("\nCrear artículo\n--------------");
-                    CrearArticulo();
-                }
-                else if (op == "3")
-                {
-                    Console.WriteLine("\nEditar artículo\n---------------");
-                    MostrarMenuEdicionArticulos();
-                }
-                else if (op == "4") menuArticulo = false;
-                else Console.WriteLine("Opción no válida.");
-            }
-        }
-
-        static void CrearArticulo()
-        {
-            if (totalArticulos >= MAX_ARTICULOS)
-            {
-                Console.WriteLine("Error: capacidad máxima de artículos alcanzada.");
-                return;
-            }
-
-            if (usuarioArticulos[usuarioLogueadoIdx] >= 5)
-            {
-                Console.WriteLine("\nError, has alcanzado el límite máximo de 5 artículos creados.");
-                return;
-            }
-
-            // Nombre
-            string nombre = "";
-            bool nombreDisponible = false;
-            while (!nombreDisponible)
-            {
-                Console.Write("Nombre: ");
-                nombre = Console.ReadLine();
-                if (NombreArticuloValido(nombre)) nombreDisponible = true;
-            }
-
-            // Valor
-            double valorNumerico = 0;
-            bool valorValido = false;
-            while (!valorValido)
-            {
-                Console.Write("Valor unitario: ");
-                string valor = Console.ReadLine();
-                if (double.TryParse(valor, out valorNumerico) && valorNumerico >= 0)
-                    valorValido = true;
-                else
-                    Console.WriteLine("Error, ingrese un número válido.");
-            }
-
-            // Cantidad
-            int cantidadNumerica = 0;
-            bool cantidadValida = false;
-            while (!cantidadValida)
-            {
-                Console.Write("Unidades disponibles: ");
-                string cantidad = Console.ReadLine();
-                if (int.TryParse(cantidad, out cantidadNumerica) && cantidadNumerica >= 0)
-                    cantidadValida = true;
-                else
-                    Console.WriteLine("Error, ingrese un número entero válido.");
-            }
-
-            articuloNombres[totalArticulos] = nombre;
-            articuloValores[totalArticulos] = valorNumerico;
-            articuloCantidades[totalArticulos] = cantidadNumerica;
-            totalArticulos++;
-            usuarioArticulos[usuarioLogueadoIdx]++;
-
-            Console.WriteLine("Artículo creado exitosamente.");
-        }
-
-        static bool NombreArticuloValido(string nombreArticulo)
-        {
-            for (int i = 0; i < totalArticulos; i++)
-            {
-                if (articuloNombres[i] == nombreArticulo)
-                {
-                    Console.WriteLine("Error, este nombre ya pertenece a un artículo registrado.");
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        static bool MostrarListaArticulos()
-        {
-            if (totalArticulos < 1)
-            {
-                Console.WriteLine("\nNo hay artículos registrados.");
-                return false;
-            }
-            for (int i = 0; i < totalArticulos; i++)
-                Console.WriteLine($"{i + 1}. {articuloNombres[i]}");
-            return true;
-        }
-
-        static void MostrarMenuArticulos()
-        {
-            if (!MostrarListaArticulos()) return;
-
-            int seleccion = 0;
-            bool esValido = false;
-            while (!esValido)
-            {
-                Console.Write("\nSeleccione el número del artículo que desea ver: ");
-                string entrada = Console.ReadLine();
-                if (int.TryParse(entrada, out seleccion) && seleccion >= 1 && seleccion <= totalArticulos)
-                    esValido = true;
-                else
-                    Console.WriteLine("Ingrese una opción del menú válida.");
-            }
-
-            int idx = seleccion - 1;
-            Console.WriteLine("--------------------------");
-            Console.WriteLine("Artículo encontrado");
-            Console.WriteLine($"Nombre: {articuloNombres[idx]}");
-            Console.WriteLine($"Valor unitario: {articuloValores[idx]}");
-            Console.WriteLine($"Unidades disponibles: {articuloCantidades[idx]}");
-            Console.WriteLine("--------------------------");
-        }
-
-        static void MostrarMenuEdicionArticulos()
-        {
-            if (!MostrarListaArticulos()) return;
-
-            int seleccion = 0;
-            bool esValido = false;
-            while (!esValido)
-            {
-                Console.Write("Ingrese el número del artículo a editar: ");
-                string entrada = Console.ReadLine();
-                if (int.TryParse(entrada, out seleccion) && seleccion >= 1 && seleccion <= totalArticulos)
-                    esValido = true;
-                else
-                    Console.WriteLine("Ingrese una opción del menú válida.");
-            }
-
-            int idx = seleccion - 1;
-            Console.WriteLine("-------------------------------");
-            Console.WriteLine("Artículo encontrado");
-            Console.WriteLine($"Nombre: {articuloNombres[idx]}");
-            Console.WriteLine($"Valor unitario: {articuloValores[idx]}");
-            Console.WriteLine($"Unidades: {articuloCantidades[idx]}");
-            Console.WriteLine("-------------------------------");
-
-            // Editar nombre
-            bool nombreValido = false;
-            while (!nombreValido)
-            {
-                Console.Write("\nIngrese nuevo nombre (Enter para mantener el actual): ");
-                string nuevoNombre = Console.ReadLine();
-                if (string.IsNullOrEmpty(nuevoNombre) || nuevoNombre == articuloNombres[idx])
-                    nombreValido = true;
-                else if (NombreArticuloValido(nuevoNombre))
-                {
-                    articuloNombres[idx] = nuevoNombre;
-                    nombreValido = true;
-                }
-            }
-
-            // Editar valor
-            bool valorValido = false;
-            while (!valorValido)
-            {
-                Console.Write("Ingrese nuevo valor (Enter para mantener el actual): ");
-                string nuevoValor = Console.ReadLine();
-                if (string.IsNullOrEmpty(nuevoValor))
-                    valorValido = true;
-                else if (double.TryParse(nuevoValor, out double valorNumerico) && valorNumerico >= 0)
-                {
-                    articuloValores[idx] = valorNumerico;
-                    valorValido = true;
-                }
-                else Console.WriteLine("Error, el valor debe ser un número válido.");
-            }
-
-            // Editar cantidad
-            bool cantidadValida = false;
-            while (!cantidadValida)
-            {
-                Console.Write("Nueva cantidad (Enter para mantener el actual): ");
-                string entradaCant = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(entradaCant))
-                    cantidadValida = true;
-                else if (int.TryParse(entradaCant, out int nuevaCantidad) && nuevaCantidad >= 0)
-                {
-                    articuloCantidades[idx] = nuevaCantidad;
-                    cantidadValida = true;
-                }
-                else Console.WriteLine("Error, el valor debe ser un número entero válido.");
-            }
-
-            Console.WriteLine("\nInformación actualizada correctamente.");
-        }
-
-        // ─────────────────────────────────────────────────────────
-        // 5. GESTIÓN DE VENTAS
-        // ─────────────────────────────────────────────────────────
-        static void GestionarVentas()
-        {
-            if (totalArticulos == 0)
-            {
-                Console.WriteLine("\nNo hay artículos registrados en el sistema.");
-                Console.WriteLine("Registre artículos antes de intentar gestionar ventas.");
-                return;
-            }
-
-            bool menuVentas = true;
-            while (menuVentas)
-            {
                 Console.WriteLine(
-                    "\n--------------------" +
-                    "\n-Gestión de Ventas -" +
-                    "\n--------------------");
-                Console.WriteLine("1. Registrar venta");
-                Console.WriteLine("2. Salir de Gestión de ventas");
-                Console.Write("Seleccione una opción: ");
+                    "1. Ver lista de artículos" +
+                    "\n2. Nuevo artículo" +
+                    "\n3. Editar información del artículo" +
+                    "\n4. Salir de Gestión de Artículos");
+                Console.Write("Seleccione: ");
                 string op = Console.ReadLine();
-
-                if (op == "1")
-                {
-                    Console.WriteLine("\nArtículos disponibles\n---------------------");
-                    MostrarMenuInventario();
-                }
-                else if (op == "2") menuVentas = false;
-                else Console.WriteLine("Ingrese una opción del menú válida.");
+                if (op == "1") VerListaArticulos();
+                else if (op == "2") CrearNuevaMatrizArticulo();
+                else if (op == "3") BuscarArticulo();
+                else if (op == "4") salir = true;
+                else Console.WriteLine("\nIngrese una opción del menú válida");
             }
         }
 
-        static void MostrarMenuInventario()
+        static void VerListaArticulos()
         {
-            // Mostrar lista con cantidades
-            if (totalArticulos < 1)
+            Console.WriteLine("\nLista de Artículos:");
+            for (int i = 0; i < 5; i++)
             {
-                Console.WriteLine("\nNo hay artículos registrados.");
-                return;
+                string articuloMostrar = string.IsNullOrEmpty(matrizArticulos[0, i]) ? "---" : matrizArticulos[0, i];
+                Console.WriteLine($"{i + 1}. {articuloMostrar}");
             }
-            for (int i = 0; i < totalArticulos; i++)
-                Console.WriteLine($"{i + 1}. {articuloNombres[i]} (stock: {articuloCantidades[i]})");
 
-            int seleccion = 0;
-            bool esValido = false;
-            while (!esValido)
+            bool seleccionValida = false;
+            while (!seleccionValida)
             {
-                Console.Write("\nIngrese el número del artículo que desea comprar: ");
+                Console.Write("\nSeleccione un número para ver detalle (1-5): ");
                 string entrada = Console.ReadLine();
-                if (int.TryParse(entrada, out seleccion) && seleccion >= 1 && seleccion <= totalArticulos)
-                    esValido = true;
-                else
-                    Console.WriteLine("Ingrese una opción del menú válida.");
-            }
 
-            int idx = seleccion - 1;
-            Console.WriteLine("--------------------------");
-            Console.WriteLine("Artículo encontrado");
-            Console.WriteLine($"Nombre: {articuloNombres[idx]}");
-            Console.WriteLine($"Inventario: {articuloCantidades[idx]}");
-            Console.WriteLine("--------------------------");
-
-            bool cantidadValida = false;
-            while (!cantidadValida)
-            {
-                Console.Write("Ingrese la cantidad de unidades a comprar: ");
-                string entradaCantidad = Console.ReadLine();
-
-                if (int.TryParse(entradaCantidad, out int cantidadAComprar) && cantidadAComprar > 0)
+                if (int.TryParse(entrada, out int sel) && sel >= 1 && sel <= 5)
                 {
-                    if (cantidadAComprar <= articuloCantidades[idx])
+                    int i = sel - 1;
+
+                    Console.WriteLine("---------------------");
+                    Console.WriteLine($"Artículo: {matrizArticulos[0, i]}");
+                    Console.WriteLine($"Valor Unitario: {matrizArticulos[1, i]}");
+                    Console.WriteLine("---------------------");
+
+                    seleccionValida = true;
+                }
+                else
+                {
+                    Console.WriteLine("Ingrese una opción del menú válida");
+                }
+            }
+        }
+
+        static void CrearNuevaMatrizArticulo()
+        {
+            bool continuar = true;
+
+            while (continuar)
+            {
+                Console.WriteLine("\nCrear Nuevos Artículos:");
+                Console.WriteLine("1. Crear nuevo artículo");
+                Console.WriteLine("2. Salir");
+                Console.Write("Seleccione una opción: ");
+                string opcion = Console.ReadLine();
+
+                if (opcion == "1")
+                {
+                    if (totalNuevosArticulos < 5)
                     {
-                        articuloCantidades[idx] -= cantidadAComprar;
-                        double total = cantidadAComprar * articuloValores[idx];
-                        Console.WriteLine("Venta exitosa.");
-                        Console.WriteLine($"Total a pagar: {total:C}");
-                        Console.WriteLine($"Nuevo inventario de {articuloNombres[idx]}: {articuloCantidades[idx]}");
-                        cantidadValida = true;
-                        IngresarArticuloPorVentas();
+                        Console.WriteLine($"\nRegistrando artículo #{totalNuevosArticulos + 1}");
+
+                        Console.Write("Nombre del artículo: ");
+                        matrizNuevosArticulos[0, totalNuevosArticulos] = Console.ReadLine();
+
+                        Console.Write("Precio unitario: ");
+                        matrizNuevosArticulos[1, totalNuevosArticulos] = Console.ReadLine();
+
+                        totalNuevosArticulos++;
+                        Console.WriteLine("¡Artículo almacenado con éxito en la nueva matriz!");
                     }
                     else
                     {
-                        Console.WriteLine("Error, no hay suficientes unidades del artículo.");
-                        cantidadValida = true; // salir del ciclo; la venta no se concreta
+                        Console.WriteLine("\nLa matriz está llena. Ya se han creado los 5 artículos permitidos.");
                     }
                 }
-                else Console.WriteLine("Error, ingrese un número entero válido mayor a 0.");
+                else if (opcion == "2")
+                {
+                    continuar = false;
+                }
+                else
+                {
+                    Console.WriteLine("Opción no válida. Intente de nuevo.");
+                }
             }
         }
 
-        static void IngresarArticuloPorVentas()
+        static void BuscarArticulo()
         {
-            bool menu = true;
-            while (menu)
-            {
-                Console.WriteLine("__________________________________");
-                Console.WriteLine("¿Desea ingresar un nuevo artículo?");
-                Console.WriteLine("1. Sí");
-                Console.WriteLine("2. No");
-                Console.Write("Seleccione una opción: ");
-                string op = Console.ReadLine();
+            Console.Write("\nNombre de artículo a buscar: ");
+            string buscar = Console.ReadLine();
+            bool encontrado = false;
 
-                if (op == "1")
+            for (int i = 0; i < 5; i++)
+            {
+                // Verificamos que la posición no sea nula antes de comparar
+                if (!string.IsNullOrEmpty(matrizArticulos[0, i]) &&
+                    matrizArticulos[0, i].ToLower() == buscar.ToLower())
                 {
-                    Console.WriteLine("__________________________________");
-                    CrearArticulo();
+                    Console.WriteLine("\nArtículo encontrado");
+                    Console.WriteLine("-------------------");
+                    Console.WriteLine($"Nombre: {matrizArticulos[0, i]}");
+                    Console.WriteLine($"Precio: ${matrizArticulos[1, i]}");
+                    Console.WriteLine("-------------------");
+
+                    encontrado = true;
+                    break;
                 }
-                else if (op == "2") menu = false;
-                else Console.WriteLine("Ingrese una opción del menú válida.");
             }
+
+            if (!encontrado)
+            {
+                Console.WriteLine("Artículo no encontrado.");
+            }
+        }
+
+        // --- MÉTODOS DE GESTIÓN DE VENTAS ---
+        static void GestionarVentas()
+        {
+            bool salirGestion = false;
+            while (!salirGestion)
+            {
+                Console.WriteLine(
+                    "\n-------------------" +
+                    "\n-Gestión de Ventas-" +
+                    "\n-------------------");
+                Console.WriteLine(
+                    "1. Registrar venta" +
+                    "\n2. Salir de Gestión de Venta");
+                Console.Write("Seleccione una opción: ");
+                string opcion = Console.ReadLine();
+
+                if (opcion == "1")
+                {
+                    RegistrarNuevaVenta();
+                }
+                else if (opcion == "2")
+                {
+                    salirGestion = true;
+                }
+                else
+                {
+                    Console.WriteLine("\nIngrese una opción del menú válida");
+                }
+            }
+        }
+
+        static void RegistrarNuevaVenta()
+        {
+            string[,] matrizRegistroVenta = new string[2, 5];
+            int[] cantidadesVenta = new int[5];
+            int contadorArticulos = 0;
+            double totalVenta = 0;
+
+            Console.Write("\nIngrese el nombre del comprador: ");
+            string nombreComprador = Console.ReadLine();
+            Console.Write("Ingrese su número de cédula: ");
+            string cedulaComprador = Console.ReadLine();
+
+            bool deseaAgregarMas = true;
+
+            while (deseaAgregarMas)
+            {
+                if (contadorArticulos >= 5)
+                {
+                    Console.WriteLine("\n¡Atención! No se pueden registrar más artículos para la venta (Límite: 5).");
+                    deseaAgregarMas = false;
+                    break;
+                }
+
+                int opcionArticulo = 0;
+                bool articuloValido = false;
+
+                while (!articuloValido)
+                {
+                    Console.WriteLine("\nLista de Artículos:");
+                    for (int i = 0; i < 5; i++)
+                    {
+                        string articuloMostrar = string.IsNullOrEmpty(matrizArticulos[0, i]) ? "---" : matrizArticulos[0, i];
+                        Console.WriteLine($"{i + 1}. {articuloMostrar}");
+                    }
+                    Console.Write("\nSeleccione el artículo a comprar (1-5): ");
+                    string entrada = Console.ReadLine();
+
+                    if (int.TryParse(entrada, out opcionArticulo) && opcionArticulo >= 1 && opcionArticulo <= 5)
+                    {
+                        if (string.IsNullOrEmpty(matrizArticulos[0, opcionArticulo - 1]))
+                        {
+                            Console.WriteLine("Error: El espacio seleccionado está vacío.");
+                        }
+                        else
+                        {
+                            articuloValido = true;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nIngrese una opción del menú válida");
+                    }
+                }
+
+                int idxStock = opcionArticulo - 1;
+
+                Console.Write($"¿Qué cantidad desea de '{matrizArticulos[0, idxStock]}'? ");
+                if (int.TryParse(Console.ReadLine(), out int cant) && cant > 0)
+                {
+                    double precioUnitario = double.Parse(matrizArticulos[1, idxStock]);
+                    double subtotal = cant * precioUnitario;
+
+                    matrizRegistroVenta[0, contadorArticulos] = matrizArticulos[0, idxStock];
+                    matrizRegistroVenta[1, contadorArticulos] = subtotal.ToString();
+                    cantidadesVenta[contadorArticulos] = cant;
+
+                    totalVenta += subtotal;
+                    contadorArticulos++;
+
+                    Console.WriteLine("Artículo agregado correctamente.");
+                }
+                else
+                {
+                    Console.WriteLine("Cantidad no válida. El artículo no se agregó.");
+                }
+
+                if (contadorArticulos < 5)
+                {
+                    Console.Write("\n¿Desea agregar otro artículo a la venta? (S/N): ");
+                    string respuesta = Console.ReadLine().ToUpper();
+                    if (respuesta != "S")
+                    {
+                        deseaAgregarMas = false;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("\nSe ha alcanzado el límite de 5 artículos.");
+                    deseaAgregarMas = false;
+                }
+            }
+
+            Console.WriteLine("\n==========================================");
+            Console.WriteLine("            RECIBO DE VENTA               ");
+            Console.WriteLine("==========================================");
+            Console.WriteLine($"Cliente: {nombreComprador} | Cédula: {cedulaComprador}");
+            Console.WriteLine("------------------------------------------");
+            Console.WriteLine("{0,-15} {1,-10} {2,-10}", "Artículo", "Cant.", "Subtotal");
+
+            for (int i = 0; i < contadorArticulos; i++)
+            {
+                Console.WriteLine("{0,-15} {1,-10} ${2,-10}",
+                    matrizRegistroVenta[0, i],
+                    cantidadesVenta[i],
+                    matrizRegistroVenta[1, i]);
+            }
+
+            Console.WriteLine("------------------------------------------");
+            Console.WriteLine($"Total Venta: ${totalVenta}");
+            Console.WriteLine("==========================================");
+
         }
     }
 }
