@@ -407,7 +407,6 @@ namespace GestionTiendas
         static void GenerarFactura()
         {
             Console.Clear();
-            Console.WriteLine("--- GENERAR FACTURA ---");
             Console.WriteLine(
                     "\n-----------------" +
                     "\n-Generar factura-" +
